@@ -364,7 +364,7 @@ static NSUInteger PSTVisibleAlertsCount = 0;
 
     } else {
         if (self.preferredStyle == PSTAlertControllerStyleActionSheet) {
-            [self showActionSheetWithSender:sender fallbackView:controller.view animated:animated];
+            [self showActionSheetWithSender:sender fallbackViewController:controller animated:animated];
             [self moveSheetToWeakStorage];
         } else {
             // Call text field configuration handlers.
@@ -389,8 +389,9 @@ static NSUInteger PSTVisibleAlertsCount = 0;
     }
 }
 
-- (void)showActionSheetWithSender:(id)sender fallbackView:(UIView *)view animated:(BOOL)animated {
+- (void)showActionSheetWithSender:(id)sender fallbackViewController:(UIViewController *)viewController animated:(BOOL)animated {
     UIActionSheet *actionSheet = self.actionSheet;
+    UITabBar *tabBar = viewController.tabBarController.tabBar;
     BOOL isIPad = UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad;
     if (isIPad && [sender isKindOfClass:UIBarButtonItem.class]) {
         [actionSheet showFromBarButtonItem:sender animated:animated];
@@ -398,16 +399,14 @@ static NSUInteger PSTVisibleAlertsCount = 0;
         [actionSheet showFromToolbar:sender];
     } else if ([sender isKindOfClass:UITabBar.class]) {
         [actionSheet showFromTabBar:sender];
-    } else if ([view isKindOfClass:UIToolbar.class]) {
-        [actionSheet showFromToolbar:(UIToolbar *)view];
-    } else if ([view isKindOfClass:UITabBar.class]) {
-        [actionSheet showFromTabBar:(UITabBar *)view];
+    } else if (tabBar) {
+        [actionSheet showFromTabBar:tabBar];
     } else if (isIPad && [sender isKindOfClass:UIView.class]) {
         [actionSheet showFromRect:[sender bounds] inView:sender animated:animated];
     } else if ([sender isKindOfClass:NSValue.class]) {
-        [actionSheet showFromRect:[sender CGRectValue] inView:view animated:animated];
+        [actionSheet showFromRect:[sender CGRectValue] inView:viewController.view animated:animated];
     } else {
-        [actionSheet showInView:view];
+        [actionSheet showInView:viewController.view];
     }
 }
 
